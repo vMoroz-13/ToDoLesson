@@ -31,7 +31,7 @@ const PeriodSelect = document.querySelector('.period-select');
  let periodAmount = document.querySelector('.period-amount');
 let inpAll =  document.querySelectorAll('input[type=text]');
 let cancel =document.querySelector('#cancel');
-
+let depositCheckmark = document.querySelector('#deposit-check');
 
 const isText = function(data){
   const pattern = new RegExp('[а-яё]','gi');
@@ -96,13 +96,44 @@ let appData = {
     }, 
     
      reset(){ 
-    appData.start();
-    
-       
-        
-     
-          },  
-    
+        cancel.style.display = 'none';
+        start.style.display = 'block';
+        this.budget = 0;
+        this.budgetDay= 0;
+        this.budgetMonth=0; 
+        this.income = {};
+        this.incomeMonth = 0;
+        this.addIncome = [];
+        this.expenses = [];
+        this.addExpenses = [];
+        this.expensesMonth = 0;
+        this.deposit = false;
+        this.percentDeposit = 0;
+        this.moneyDeposit = 0;
+        inpAll.forEach((item)=>{
+            item.value = '';
+            item.disabled = false;
+        });
+        incomeItems.forEach((item,i)=>{
+            if(i > 0){
+                item.remove();
+                btnPlusIncome.style.display = 'block';
+            }
+            console.log('i : '+i);
+            console.log('item : '+item);
+        });
+        expensesItems.forEach((item,i)=>{
+            if(i > 0){
+                item.remove();
+                btnPlusExpenses.style.display = 'block';
+            }
+            
+        });
+        depositCheckmark.checked = false;
+        periodAmount.textContent = 1;
+        PeriodSelect.value = 1;
+        },
+
     showResult(){
         budgetMonthValue.value = this.budgetMonth;
         budgetDayValue.value = Math.ceil(this.budgetDay);
@@ -110,7 +141,7 @@ let appData = {
         additionalExpensesValue.value = this.addExpenses.join(', ');
         additionalIncomeValue.value = this.addIncome.join(', ');
         targetMonthValue.value = Math.ceil(this.getTargetMonth());
-        //incomePeriodValue.value = appData.calcSavedMoney();
+        incomePeriodValue.value = appData.calcSavedMoney();
        
         PeriodSelect.addEventListener('input', ()=>{
             incomePeriodValue.value = this.calcSavedMoney();
@@ -226,14 +257,12 @@ let appData = {
     }
 };
 
-//appData.reset();
                                  //The end obj
-  // 1) Привязать контекст вызова функции start к appData 
- let appDataObj = appData.start.bind(appData);                               
+  // 1) Привязать контекст вызова функции start к appData                               
 
-start.addEventListener('click',appData.start);
+start.addEventListener('click',appData.start.bind(appData));
 //навешиваем событие и выполнение метода reset
-cancel.addEventListener('click', appData.reset);
+cancel.addEventListener('click', appData.reset.bind(appData));
 
 btnPlusExpenses.addEventListener('click', appData.addExpensesBlock);
 btnPlusIncome.addEventListener('click',appData.addIncomeBlock);
